@@ -7,7 +7,6 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/jonasschen/laravel-easy-audits.svg?style=flat-square)](https://packagist.org/packages/jonasschen/laravel-easy-audits)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 [![Total Downloads](https://img.shields.io/packagist/dt/jonasschen/laravel-easy-audits.svg?style=flat-square)](https://packagist.org/packages/jonasschen/laravel-easy-audits)
-![GitHub Actions](https://github.com/jonasschen/laravel-easy-audits/actions/workflows/main.yml/badge.svg)
 
 A quick and easy way to audit changes to your Laravel project's database.
 
