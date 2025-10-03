@@ -31,4 +31,16 @@ trait EasyAuditsTrait
     {
         return $this->nonAuditableAttributes ?? [];
     }
+
+    public function getEnabledTriggers(): array
+    {
+        return $this->enabledTriggers ?? config('easy-audits.enabled_triggers', [
+            'insert',
+            'update',
+            'delete',
+            'soft_delete',
+            'force_delete',
+            'restore',
+        ]);
+    }
 }

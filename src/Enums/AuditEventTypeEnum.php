@@ -6,11 +6,12 @@ use ReflectionClass;
 
 enum AuditEventTypeEnum: string
 {
-    case INSERT = 'INSERT';
-    case UPDATE = 'UPDATE';
     case DELETE = 'DELETE';
     case FORCE_DELETE = 'FORCE_DELETE';
+    case INSERT = 'INSERT';
     case RESTORE = 'RESTORE';
+    case SOFT_DELETE = 'SOFT_DELETE';
+    case UPDATE = 'UPDATE';
 
     public static function getConstants(): array
     {

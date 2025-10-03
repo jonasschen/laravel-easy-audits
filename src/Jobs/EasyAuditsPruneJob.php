@@ -24,7 +24,6 @@ final class EasyAuditsPruneJob implements ShouldQueue
 
     public function handle(EasyAuditService $easyAuditService): void
     {
-        info('Running Job...');
         $ttl = config('easy-audits.audits_ttl', 0);
         $easyAuditService->prune((int) $ttl);
     }

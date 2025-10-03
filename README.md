@@ -13,18 +13,52 @@ A quick and easy way to audit changes to your Laravel project's database.
 Using Laravel Easy Audits, you can get all missing translations.
 ## Installation
 
-- You can install the package via composer:
+### You can install the package via composer:
 ```bash
 composer require jonasschen/laravel-easy-audits
 ```
 
-- Publish the config files using the artisan CLI tool:
+### Publish the config files using the artisan CLI tool:
 ```bash
 php artisan vendor:publish --tag=easy-audits-config
 ```
 This command will publish the config file: `config/easy-audits.php`
 
-- (OPTIONAL) Publish the migrations files using the artisan CLI tool:
+**Available configurations:**
+- audit_table_name [Audit table name]: Table name where audit logs will be stored. NOTE: After the migrate process has been executed, changing this configuration will break the package.
+    - Default Value:
+    ```php
+    'audit_table_name' => 'audits',
+    ````
+- enabled_triggers [Enabled Triggers]: You can customize which types of changes you want to audit. This setting is global and affects all enabled models/entities in the project, unless this setting is overridden via the model/entity's $enabledTriggers property.
+    - Default Value:
+    ```php 
+    'enabled_triggers' => [
+        'insert',
+        'update',
+        'delete',
+        'soft_delete',
+        'force_delete',
+        'restore',
+    ],
+    ````
+- model_class [Model class]: Model class to be used to persist in the database. You can change this configuration if you want to override the model class.
+    - Default Value:
+    ```php
+    'model_class' => EasyAudit::class,
+    ````
+- observer_class [Observer class]: Observer class to be used to persist in the database. You can change this configuration if you want to override the observer class.
+    - Default Value:
+    ```php
+    'observer_class' => EasyAuditsObserver::class,
+    ````
+- audits_ttl [Audits time-to-life (in days)]: Quantity of **days** audit logs should remain in the database before being pruned. Zero means no pruning.
+    - Default Value:
+    ```php
+    'audits_ttl' => 0,
+    ````
+
+### Publish the migration files using the artisan CLI tool ( (OPTIONAL):
 
 If you want to customize the migration file, you can publish it within your project.
 
@@ -34,7 +68,46 @@ php artisan vendor:publish --tag=easy-audits-migrations
 ```
 This command will publish the migration file: `database/migrations/2025_10_01_000000_create_audits_table.php`
 
-### Pruning logs
+## Usage
+To enable auditing for a table, you only need to declare the `EasyAuditsTrait` trait in your model/entity.
+```php
+use Jonasschen\LaravelEasyAudits\Traits\EasyAuditsTrait;
+
+class User extends Model
+{
+    use EasyAuditsTrait;
+}
+```
+Ready! Now, every time you make a change to your model/entity, a new record will be created in the audit table.
+
+This package is compatible with SoftDeletes and is able to audit the following types of changes: `insert`, `update`, `delete`, `soft_delete`, `force_delete` and `restore`.
+
+### Available properties
+The following properties are available to customize how auditing is performed on each model/entity:
+- `$auditableAttributes`: Use this property when you want to audit only changes to specific fields. By default, all fields will always be audited.
+```php
+protected array $auditableAttributes = [
+    'name',
+    'email',
+]; 
+```
+- `$nonAuditableAttributes`: Use this property when you want to remove specific fields from the audit. By default, all fields will always be audited.
+```php
+protected array $nonAuditableAttributes = [
+    'password',
+    'remember_token',
+    'updated_at',
+]; 
+```
+- `$disableTriggers`: Use this property when you want to disable auditing for a specific change type. Accepted values are: `insert`, `update`, `delete`, `soft_delete`, `force_delete` and `restore`. By default, all change types are audited.
+```php
+protected array $disableTriggers = [
+    'restore',
+    'soft_delete',    
+]; 
+```
+
+## Pruning logs
 It is possible to prune audited logs. However, before doing so, it is important to review the `audits_ttl` setting in your `config/easy-audits.php` file.
 
 This setting set the package how many days logs should remain in the database before being deleted.
@@ -84,48 +157,38 @@ use Illuminate\Console\Scheduling\Schedule;
 
 public function boot(): void
 {
-    /*** Other possible implementations here ***/
+    /*** Other implementations here ***/
     
     $this->callAfterResolving(Schedule::class, fn (Schedule $schedule) =>
         $schedule->job(new EasyAuditsPruneJob())->dailyAt('01:00')
     );
 }
 ```
-NOTE: In the schedule settings, you are free to use any scheduling frequency supported by your Laravel version.
+NOTE: In the schedule settings, you are free to use any scheduling frequency supported by your Laravel version. E.g. `->everyThirtyMinutes()`, `->hourly()`, `->daily()`, `->weekly()`, `->monthly()`, `->quarterly()`, `->yearly()`, etc.
 
-### Available configurations
-- audit_table_name (Default: 'audits')
-    - Audit table name: Table name where audit logs will be stored. NOTE: After the migrate process has been executed, changing this configuration will break the package. 
-- model_class (Default: EasyAudit::class)
-    - Model class: Model class to be used to persist in the database. You can change this configuration if you want to override the model class. 
-- observer_class (Default: EasyAuditsObserver::class)
-    - Observer class: Observer class to be used to persist in the database. You can change this configuration if you want to override the observer class.
-- audits_ttl (Default: 0)
-    - Observer class: Quantity of days audit logs should remain in the database before being pruned. Zero means no pruning.
+## Troubleshooting
+- If you get an error when running the migration or prune commands, please check if the all configurations are set to the correct value.
+- If you get an error when running the migration, please check if the audit table already exists.
+- If you get an error when running any command, please make sure you have the required Laravel PHP extensions installed in your PHP CLI. 
 
 ## Consider Sponsoring
 Help me maintain this project, please consider looking at the [FUNDING](./.github/FUNDING.yml) file for more info.
 
 <a href="https://bmc.link/jonasschen" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 
-#### BTC
+### BTC
 ![btc](https://github.com/jonasschen/laravel-easy-audits/assets/31046817/2f69a4aa-4ee2-442e-aa1f-4a1c0cde217c)
 
-#### ETH
+### ETH
 ![eth](https://github.com/jonasschen/laravel-easy-audits/assets/31046817/41ca0d2f-e120-4733-a96b-ff7a34e1e4de)
 
-### Changelog
+## Changelog
 Please see [CHANGELOG](CHANGELOG.md) for more information about recent changes.
-
-### Testing
-```bash
-composer test
-```
 
 ## Contributing
 Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
-### Security
+## Security
 If you discover any security-related issues, please email jonasschen@gmail.com instead of using the issue tracker. Please do not email any questions, open an issue if you have a question.
 
 ## Credits

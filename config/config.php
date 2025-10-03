@@ -18,6 +18,26 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Enabled Triggers
+    |--------------------------------------------------------------------------
+    |
+    | You can customize which types of changes you want to audit.
+    | This setting is global and affects all enabled models/entities in the
+    | project, unless this setting is overridden via the model/entity's
+    | $enabledTriggers property.
+    |
+    */
+    'enabled_triggers' => [
+        'insert',
+        'update',
+        'delete',
+        'soft_delete',
+        'force_delete',
+        'restore',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Model class
     |--------------------------------------------------------------------------
     |

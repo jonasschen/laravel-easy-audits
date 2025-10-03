@@ -3,6 +3,8 @@
 namespace Jonasschen\LaravelEasyAudits\Services;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Jonasschen\LaravelEasyAudits\Models\EasyAudit;
 
 final class EasyAuditService
 {
@@ -10,15 +12,16 @@ final class EasyAuditService
 
     public function prune(int $ttl): int
     {
-        info('Running Service...');
         if ($ttl <= 0) {
             return 0;
         }
 
         /** @var Model $model */
-        $model = config('easy-audits.model_class');
+        $modelClass = config('easy-audits.model_class', EasyAudit::class);
+        $model = new $modelClass;
+        $tableName = $model->getTable();
 
-        return $model::query()
+        return DB::table($tableName)
             ->where('created_at', '<=', now()->subDays($ttl))
             ->delete();
     }
