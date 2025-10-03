@@ -49,10 +49,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "LaravelEasyAuditsServiceProvider"
+                "Jonasschen\\LaravelEasyAudits\\Providers\\LaravelEasyAuditsServiceProvider"
             ],
             "aliases": {
-                "LaravelEasyAudits": "LaravelEasyAuditsFacade"
+                "LaravelEasyAudits": "Jonasschen\\LaravelEasyAudits\\Facades\\LaravelEasyAuditsFacade"
             }
         }
     }
