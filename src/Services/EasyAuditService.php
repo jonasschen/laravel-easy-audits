@@ -18,7 +18,7 @@ final class EasyAuditService
 
         /** @var Model $model */
         $modelClass = config('easy-audits.model_class', EasyAudit::class);
-        $model = new $modelClass;
+        $model = new $modelClass();
         $tableName = $model->getTable();
 
         return DB::table($tableName)
